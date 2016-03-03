@@ -61,7 +61,7 @@ public class OutputSignalTracker: SignalTracker {
     }
     else {
       audioPlayer.play()
-      audioEngine.start()
+      try audioEngine.start()
     }
   }
   
