@@ -5,6 +5,7 @@ import Pitchy
 public protocol PitchEngineDelegate: class {
   func pitchEngineDidRecievePitch(pitchEngine: PitchEngine, pitch: Pitch)
   func pitchEngineDidRecieveError(pitchEngine: PitchEngine, error: ErrorType)
+  func pitchEngineDidFinishSong()
 }
 
 public class PitchEngine {
@@ -88,6 +89,10 @@ public class PitchEngine {
     }
   }
 
+  public func playOrPause() {
+    signalTracker.playOrPause()
+  }
+  
   public func stop() {
     signalTracker.stop()
     active = false
@@ -127,6 +132,16 @@ extension PitchEngine: SignalTrackerDelegate {
             weakSelf.delegate?.pitchEngineDidRecieveError(weakSelf, error: error)
           }
         }
+    }
+  }
+  
+  public func signalTrackerDidFinishSong(signalTracker: SignalTracker) {
+    dispatch_async(queue) { [weak self] in
+      guard let weakSelf = self else { return }
+      
+      dispatch_async(dispatch_get_main_queue()) {
+        weakSelf.delegate?.pitchEngineDidFinishSong()
+      }
     }
   }
 }
