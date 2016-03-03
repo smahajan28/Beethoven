@@ -32,8 +32,10 @@ public class OutputSignalTracker: SignalTracker {
 
     audioEngine.attachNode(audioPlayer)
     audioEngine.connect(audioPlayer, to: audioEngine.outputNode, format: audioFile.processingFormat)
-    audioPlayer.scheduleFile(audioFile, atTime: nil, completionHandler: nil)
-
+    audioPlayer.scheduleFile(audioFile, atTime: nil) { () -> Void in
+        self.audioEngine.outputNode.removeTapOnBus(self.bus) //To removeTap after song get completed
+    }
+    
     audioEngine.outputNode.installTapOnBus(bus, bufferSize: bufferSize, format: nil) {
       buffer, time in
 
