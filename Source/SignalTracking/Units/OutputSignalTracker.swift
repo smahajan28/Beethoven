@@ -60,8 +60,8 @@ public class OutputSignalTracker: SignalTracker {
       audioEngine.pause()
     }
     else {
-      audioPlayer.play()
       try audioEngine.start()
+      audioPlayer.play()
     }
   }
   
