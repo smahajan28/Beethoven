@@ -34,9 +34,9 @@ public class OutputSignalTracker: SignalTracker {
     audioEngine.connect(audioPlayer, to: audioEngine.outputNode, format: audioFile.processingFormat)
     audioPlayer.scheduleFile(audioFile, atTime: nil) { () -> Void in
       self.audioEngine.outputNode.removeTapOnBus(self.bus) //To removeTap after song get completed
-        dispatch_async(dispatch_get_main_queue()) {
-            self.delegate?.signalTrackerDidFinishSong(self)
-        }
+      dispatch_async(dispatch_get_main_queue()) {
+        self.delegate?.signalTrackerDidFinishSong(self)
+      }
     }
     
     audioEngine.outputNode.installTapOnBus(bus, bufferSize: bufferSize, format: nil) {
@@ -54,7 +54,7 @@ public class OutputSignalTracker: SignalTracker {
   }
   
   
-  public func playOrPause() {
+  public func playOrPause() throws {
     if audioPlayer.playing {
       audioPlayer.pause()
       audioEngine.pause()

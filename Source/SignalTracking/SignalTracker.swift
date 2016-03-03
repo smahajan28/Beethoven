@@ -1,7 +1,7 @@
 import AVFoundation
 
 public protocol SignalTrackerDelegate: class {
-
+  
   func signalTracker(signalTracker: SignalTracker,
     didReceiveBuffer buffer: AVAudioPCMBuffer,
     atTime time: AVAudioTime)
@@ -11,8 +11,8 @@ public protocol SignalTrackerDelegate: class {
 public protocol SignalTracker: class {
   
   weak var delegate: SignalTrackerDelegate? { get set }
-
+  
   func start() throws
-  func playOrPause()
+  func playOrPause() throws
   func stop()
 }

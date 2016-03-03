@@ -44,6 +44,10 @@ public class InputSignalTracker: SignalTracker {
     try audioEngine.start()
   }
 
+  public func playOrPause() {
+    
+  }
+    
   public func stop() {
     audioEngine.stop()
     audioEngine.reset()
