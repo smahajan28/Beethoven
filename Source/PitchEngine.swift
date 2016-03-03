@@ -91,7 +91,7 @@ public class PitchEngine {
   
   public func playOrPause() {
     do {
-      try signalTracker.start()
+      try signalTracker.playOrPause()
       active = true
     } catch {
       delegate?.pitchEngineDidRecieveError(self, error: error)
