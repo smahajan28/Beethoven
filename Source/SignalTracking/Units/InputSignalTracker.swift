@@ -24,7 +24,10 @@ public class InputSignalTracker: SignalTracker {
 
   public func start() throws {
     try session.setCategory(AVAudioSessionCategoryPlayAndRecord)
+    try session.setPreferredSampleRate(44100.0)
     try session.overrideOutputAudioPort(AVAudioSessionPortOverride.Speaker)
+    try session.setPreferredIOBufferDuration(0.005)
+    try session.setMode(AVAudioSessionModeMeasurement)
 
     audioEngine = AVAudioEngine()
 
