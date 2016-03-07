@@ -26,8 +26,6 @@ public class InputSignalTracker: SignalTracker {
     try session.setCategory(AVAudioSessionCategoryPlayAndRecord)
     try session.setPreferredSampleRate(44100.0)
     try session.overrideOutputAudioPort(AVAudioSessionPortOverride.Speaker)
-    try session.setPreferredIOBufferDuration(0.005)
-    try session.setMode(AVAudioSessionModeMeasurement)
 
     audioEngine = AVAudioEngine()
 
@@ -52,6 +50,9 @@ public class InputSignalTracker: SignalTracker {
   }
     
   public func stop() {
+    if  let inputNode = audioEngine.inputNode {
+        inputNode.removeTapOnBus(bus)
+    }
     audioEngine.stop()
     audioEngine.reset()
     audioEngine = nil
