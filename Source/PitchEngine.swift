@@ -3,7 +3,7 @@ import AVFoundation
 import Pitchy
 
 public protocol PitchEngineDelegate: class {
-  func pitchEngineDidRecievePitch(pitchEngine: PitchEngine, pitch: Pitch)
+  func pitchEngineDidRecievePitch(pitchEngine: PitchEngine, buffer: Buffer, pitch: Pitch)
   func pitchEngineDidRecieveError(pitchEngine: PitchEngine, error: ErrorType)
   func pitchEngineDidFinishSong()
 }
@@ -118,26 +118,26 @@ public class PitchEngine {
 extension PitchEngine: SignalTrackerDelegate {
   
   public func signalTracker(signalTracker: SignalTracker,
-    didReceiveBuffer buffer: AVAudioPCMBuffer, atTime time: AVAudioTime) {
-      dispatch_async(queue) { [weak self] in
-        guard let weakSelf = self else { return }
+                            didReceiveBuffer buffer: AVAudioPCMBuffer, atTime time: AVAudioTime) {
+    dispatch_async(queue) { [weak self] in
+      guard let weakSelf = self else { return }
+      
+      let transformedBuffer = weakSelf.transformer.transformBuffer(buffer)
+      
+      do {
+        let frequency = try weakSelf.estimator.estimateFrequency(Float(time.sampleRate),
+                                                                 buffer: transformedBuffer)
+        let pitch = try Pitch(frequency: Double(frequency))
         
-        let transformedBuffer = weakSelf.transformer.transformBuffer(buffer)
-        
-        do {
-          let frequency = try weakSelf.estimator.estimateFrequency(Float(time.sampleRate),
-            buffer: transformedBuffer)
-          let pitch = try Pitch(frequency: Double(frequency))
-          
-          dispatch_async(dispatch_get_main_queue()) {
-            weakSelf.delegate?.pitchEngineDidRecievePitch(weakSelf, pitch: pitch)
-          }
-        } catch {
-          dispatch_async(dispatch_get_main_queue()) {
-            weakSelf.delegate?.pitchEngineDidRecieveError(weakSelf, error: error)
-          }
+        dispatch_async(dispatch_get_main_queue()) {
+          weakSelf.delegate?.pitchEngineDidRecievePitch(weakSelf, buffer: transformedBuffer, pitch: pitch)
+        }
+      } catch {
+        dispatch_async(dispatch_get_main_queue()) {
+          weakSelf.delegate?.pitchEngineDidRecieveError(weakSelf, error: error)
         }
       }
+    }
   }
   
   public func signalTrackerDidFinishSong(signalTracker: SignalTracker) {
