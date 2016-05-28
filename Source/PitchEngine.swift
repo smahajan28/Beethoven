@@ -54,7 +54,7 @@ public class PitchEngine {
   // MARK: - Processing
   
   public func start() {
-    guard mode == .Playback else {
+    guard mode == .Record else {
       activate()
       return
     }
@@ -66,9 +66,9 @@ public class PitchEngine {
       activate()
     case AVAudioSessionRecordPermission.Denied:
       dispatch_async(dispatch_get_main_queue()) {
-        if let settingsURL = NSURL(string: UIApplicationOpenSettingsURLString) {
-          UIApplication.sharedApplication().openURL(settingsURL)
-        }
+        self.delegate?.pitchEngineDidRecieveError(self,
+                                                  error: Error.RecordPermissionDenied)
+        return
       }
     case AVAudioSessionRecordPermission.Undetermined:
       AVAudioSession.sharedInstance().requestRecordPermission { [weak self] granted  in
