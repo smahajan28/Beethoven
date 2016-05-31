@@ -50,9 +50,6 @@ public class InputSignalTracker: SignalTracker {
   }
     
   public func stop() {
-    if  let inputNode = audioEngine.inputNode {
-        inputNode.removeTapOnBus(bus)
-    }
     audioEngine.stop()
     audioEngine.reset()
     audioEngine = nil
