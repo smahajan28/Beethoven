@@ -12,6 +12,7 @@ public class PitchEngine {
   
   public enum Error: ErrorType {
     case RecordPermissionDenied
+    case AudioSessionErrorInsufficientPriority
   }
   
   public enum Mode {

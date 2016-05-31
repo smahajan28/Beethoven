@@ -2,6 +2,10 @@ import AVFoundation
 
 public class OutputSignalTracker: SignalTracker {
   
+  public enum Error: ErrorType {
+    case AudioSessionErrorInsufficientPriority
+  }
+  
   public let bufferSize: AVAudioFrameCount
   public let audioURL: NSURL
   public weak var delegate: SignalTrackerDelegate?
@@ -23,7 +27,17 @@ public class OutputSignalTracker: SignalTracker {
   public func start() throws {
     let session = AVAudioSession.sharedInstance()
     
-    try session.setCategory(AVAudioSessionCategoryPlayback, withOptions: [AVAudioSessionCategoryOptions.MixWithOthers, AVAudioSessionCategoryOptions.DuckOthers])
+    do {
+      try session.setCategory(AVAudioSessionCategoryPlayback, withOptions: [AVAudioSessionCategoryOptions.MixWithOthers, AVAudioSessionCategoryOptions.DuckOthers])
+    } catch {
+      throw Error.AudioSessionErrorInsufficientPriority
+    }
+    
+    do {
+      try session.setActive(true)
+    } catch {
+      throw Error.AudioSessionErrorInsufficientPriority
+    }
     
     audioEngine = AVAudioEngine()
     audioPlayer = AVAudioPlayerNode()
@@ -56,10 +70,22 @@ public class OutputSignalTracker: SignalTracker {
   
   public func playOrPause() throws {
     if audioPlayer.playing {
+      do {
+        try AVAudioSession.sharedInstance().setActive(false)
+      }
+      catch {
+        
+      }
       audioPlayer.pause()
       audioEngine.pause()
     }
     else {
+      do {
+        try AVAudioSession.sharedInstance().setActive(true)
+      }
+      catch {
+        
+      }
       audioEngine.stop()
       audioEngine.prepare()
       try audioEngine.start()
@@ -68,6 +94,12 @@ public class OutputSignalTracker: SignalTracker {
   }
   
   public func stop() {
+    do {
+      try AVAudioSession.sharedInstance().setActive(false)
+    }
+    catch {
+      
+    }
     audioPlayer.stop()
     audioEngine.stop()
     audioEngine.reset()
