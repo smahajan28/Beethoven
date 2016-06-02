@@ -33,12 +33,6 @@ public class OutputSignalTracker: SignalTracker {
       throw Error.AudioSessionErrorInsufficientPriority
     }
     
-    do {
-      try session.setActive(true)
-    } catch {
-      throw Error.AudioSessionErrorInsufficientPriority
-    }
-    
     audioEngine = AVAudioEngine()
     audioPlayer = AVAudioPlayerNode()
     
@@ -70,12 +64,6 @@ public class OutputSignalTracker: SignalTracker {
   
   public func playOrPause() throws {
     if audioPlayer.playing {
-      do {
-        try AVAudioSession.sharedInstance().setActive(false)
-      }
-      catch {
-        
-      }
       audioPlayer.pause()
       audioEngine.pause()
     }
@@ -94,12 +82,6 @@ public class OutputSignalTracker: SignalTracker {
   }
   
   public func stop() {
-    do {
-      try AVAudioSession.sharedInstance().setActive(false)
-    }
-    catch {
-      
-    }
     audioPlayer.stop()
     audioEngine.stop()
     audioEngine.reset()
